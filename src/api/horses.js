@@ -1,3 +1,5 @@
+import * as FileSystem from 'expo-file-system/legacy';
+
 const API_BASE = 'http://192.168.168.110:5280/api';
 export const API_ORIGIN = 'http://192.168.168.110:5280';
 
@@ -41,18 +43,18 @@ export const horses = {
   },
 
   async uploadImage(id, imageUri) {
-    const formData = new FormData();
-    formData.append('file', {
-      uri: imageUri,
-      name: 'photo.jpg',
-      type: 'image/jpeg',
-    });
-    const response = await fetch(`${API_BASE}/horses/${id}/image`, {
-      method: 'POST',
-      body: formData,
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    if (!response.ok) throw new Error('Kunde inte ladda upp bild');
-    return response.json();
+    const result = await FileSystem.uploadAsync(
+      `${API_BASE}/horses/${id}/image`,
+      imageUri,
+      {
+        httpMethod: 'POST',
+        uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+        fieldName: 'file',
+      }
+    );
+    if (result.status < 200 || result.status >= 300) {
+      throw new Error('Kunde inte ladda upp bild');
+    }
+    return JSON.parse(result.body);
   },
 };

@@ -2,12 +2,15 @@ import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Image, ScrollView,
+  Image,
+  KeyboardAvoidingView, Platform,
+  ScrollView,
   StyleSheet,
   Switch,
   Text, TextInput, TouchableOpacity,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { API_ORIGIN } from '../api/horses';
 
 export default function HorseForm({ editingHorse, onSave, onDelete, loading }) {
@@ -17,6 +20,7 @@ const [formData, setFormData] = useState({
 });
   const [imageUri, setImageUri] = useState(null);
   const [error, setError] = useState('');
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (editingHorse) {
@@ -74,7 +78,15 @@ const [formData, setFormData] = useState({
   const existingImage = editingHorse?.imagePath ? `${API_ORIGIN}${editingHorse.imagePath}` : null;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+    >
+    <ScrollView
+      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 40 }]}
+      keyboardShouldPersistTaps="handled"
+    >
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <Text style={styles.label}>Namn *</Text>
@@ -172,6 +184,7 @@ const [formData, setFormData] = useState({
         </TouchableOpacity>
       )}
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
