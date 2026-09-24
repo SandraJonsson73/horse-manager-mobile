@@ -1,8 +1,8 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
-import { horses } from '../../api/horses';
-import HorseForm from '../../components/HorseForm';
+import { horses } from '../../../api/horses';
+import HorseForm from '../../../components/HorseForm';
 
 export default function HorseDetail() {
   const { id } = useLocalSearchParams();
@@ -45,17 +45,17 @@ export default function HorseDetail() {
         {
           text: 'Radera',
           style: 'destructive',
-          onPress: async () => {
-            setLoading(true);
-            try {
-              await horses.delete(id);
-              router.back();
-            } catch {
-              Alert.alert('Fel', 'Kunde inte radera hästen');
-            } finally {
-              setLoading(false);
-            }
-          },
+        onPress: async () => {
+          setLoading(true);
+          try {
+            await horses.delete(id);
+            router.dismissAll();
+          } catch {
+            Alert.alert('Fel', 'Kunde inte radera hästen');
+          } finally {
+            setLoading(false);
+          }
+        },
         },
       ]
     );
